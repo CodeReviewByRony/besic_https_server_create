@@ -52,6 +52,11 @@ export const generatePasswordHash = async (password) => {
   return hash;
 };
 
+export const passwordDecoded = async (formPassword, databasePassword) => {
+  const result = await bcrypt.compare(formPassword, databasePassword);
+  return result;
+};
+
 export const generateAccessToken = async (payload) => {
   const result = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
