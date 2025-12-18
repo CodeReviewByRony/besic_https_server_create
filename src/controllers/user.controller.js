@@ -75,6 +75,9 @@ export const newUserCreate = (req, res) => {
       const payloadData = user._id;
       const token = await generateAccessToken({ payloadData });
 
+      // Header-এ attach করা
+      res.setHeader("Authorization", `Bearer ${token}`);
+
       //   update access token
       user.accessToken = token;
       await user.save();
