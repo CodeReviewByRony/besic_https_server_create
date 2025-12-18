@@ -10,4 +10,7 @@ const DBURL = process.env.DBURL;
 const SSL_CERT_PATH = process.env.SSL_CERT_PATH;
 const SSL_KEY_PATH = process.env.SSL_KEY_PATH;
 
-export { PORT, DBURL, SSL_KEY_PATH, SSL_CERT_PATH };
+// access token secret
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+
+export { PORT, DBURL, SSL_KEY_PATH, SSL_CERT_PATH, ACCESS_TOKEN_SECRET };
