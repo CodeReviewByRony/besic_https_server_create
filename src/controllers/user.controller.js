@@ -58,7 +58,7 @@ export const newUserCreate = (req, res) => {
       const uniqueUsername = await generateUsername();
 
       //   password hashing function call
-      const passwordHashing = generatePasswordHash(password);
+      const passwordHashing = await generatePasswordHash(password);
 
       //   user create data
       const userData = {

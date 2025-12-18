@@ -45,6 +45,7 @@ export const generateUsername = async () => {
 };
 
 // generate hashing password function
-export const generatePasswordHash = (password) => {
-  return bcrypt.hash(password, 10);
+export const generatePasswordHash = async (password) => {
+  const hash = await bcrypt.hash(password, 10);
+  return hash;
 };
