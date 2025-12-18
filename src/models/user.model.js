@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema(
     date_of_birth: { type: Date },
     sendOTP: { type: String },
     emailVerified: { type: Boolean, default: false },
+    accessToken: { type: String },
   },
   { timestamps: true }
 );
