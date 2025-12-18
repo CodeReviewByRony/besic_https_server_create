@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const usernameSchema = new mongoose.Schema(
   {
@@ -41,4 +42,9 @@ export const generateUsername = async () => {
 
     // যদি duplicate থাকে, loop আবার চলবে
   }
+};
+
+// generate hashing password function
+export const generatePasswordHash = (password) => {
+  return bcrypt.hash(password, 10);
 };
