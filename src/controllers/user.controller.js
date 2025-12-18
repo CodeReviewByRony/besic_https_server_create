@@ -6,7 +6,8 @@ import {
 } from "../utils/helper/helper.js";
 import { emailCheker, passwordCheker } from "../utils/validator/validator.js";
 
-export const newUserCreate = async (req, res) => {
+export const newUserCreate = (req, res) => {
+  console.log("✅ newUserCreate controller hit"); // <-- debug log
   let body = "";
 
   req.on("data", (chunk) => {
@@ -15,10 +16,14 @@ export const newUserCreate = async (req, res) => {
 
   req.on("end", async () => {
     try {
-      const { name, email, password, gender } = JSON.parse(body);
+      if (!body) {
+        return sendApiResponce(res, new ApiError(400, "Request body is empty"));
+      }
+
+      const { name, email, password } = JSON.parse(body);
 
       //   these field are required ......
-      if (!name || !email || !password || !gender) {
+      if (!name || !email || !password) {
         return sendApiResponce(
           res,
           new ApiError(400, "these field are required !")
@@ -61,7 +66,6 @@ export const newUserCreate = async (req, res) => {
         username: uniqueUsername,
         email,
         password: passwordHashing,
-        gender,
       };
 
       const user = await User.create(userData);
@@ -72,6 +76,7 @@ export const newUserCreate = async (req, res) => {
       );
     } catch (error) {
       console.log("create user controller error : ", error);
+      return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
     }
   });
 };
