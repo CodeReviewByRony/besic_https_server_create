@@ -1,6 +1,7 @@
 import { User } from "../models/user.model.js";
 import { ApiError, ApiSuccess, sendApiResponce } from "../utils/class/class.js";
 import {
+  generateAccessToken,
   generatePasswordHash,
   generateUsername,
 } from "../utils/helper/helper.js";
@@ -69,6 +70,14 @@ export const newUserCreate = (req, res) => {
       };
 
       const user = await User.create(userData);
+
+      //   user payload send to access generate token function
+      const payloadData = user._id;
+      const token = await generateAccessToken({ payloadData });
+
+      //   update access token
+      user.accessToken = token;
+      await user.save();
 
       return sendApiResponce(
         res,
