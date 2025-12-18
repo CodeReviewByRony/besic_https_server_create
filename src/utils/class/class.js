@@ -15,3 +15,35 @@ export class ApiSuccess {
     this.data = data;
   }
 }
+
+export function sendApiResponce(res, result) {
+  // api error
+  if (result instanceof ApiError) {
+    res.writeHead(result.statusCode, {
+      "Content-Type": "application/json",
+    });
+    res.end(
+      JSON.stringify({
+        status: false,
+        statusCode: result.statusCode,
+        message: result.message,
+        data: result.data,
+      })
+    );
+  }
+
+  //   api success
+  if (result instanceof ApiSuccess) {
+    res.writeHead(result.statusCode, {
+      "Content-Type": "application/json",
+    });
+    res.end(
+      JSON.stringify({
+        status: true,
+        statusCode: result.statusCode,
+        message: result.message,
+        data: result.data,
+      })
+    );
+  }
+}
