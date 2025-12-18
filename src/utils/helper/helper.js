@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { ACCESS_TOKEN_SECRET } from "../../constent.js";
 
 const usernameSchema = new mongoose.Schema(
   {
@@ -48,4 +50,12 @@ export const generateUsername = async () => {
 export const generatePasswordHash = async (password) => {
   const hash = await bcrypt.hash(password, 10);
   return hash;
+};
+
+export const generateAccessToken = async (payload) => {
+  const result = await jwt.sign(payload, ACCESS_TOKEN_SECRET, {
+    expiresIn: 1000 * 60 * 60 * 24 * 30,
+  });
+  return result;
+  ad;
 };
