@@ -4,6 +4,7 @@ import path from "path";
 import constants from "constants";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "./constent.js";
 import { userRoute } from "./routes/user.route.js";
+import { matchRouteAndParamsFun } from "./utils/utility/utility.js";
 
 if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
   console.log("ssl path missing");
@@ -48,7 +49,7 @@ export const app = https.createServer(sslOptions, (req, res) => {
   });
 
   const { method, url } = req;
-  const pathname = url.split("?")[0];
+  const pathname = url.split("?")[0].replace(/\/+$/, "");
 
   //   preflight ............. request
   if (method === "OPTIONS") {
@@ -61,14 +62,27 @@ export const app = https.createServer(sslOptions, (req, res) => {
 
   const allRoutes = [...userRoute];
 
+  let routeMatched = false;
+
   for (const route of allRoutes) {
     if (method === route.method) {
-      const params = matchRoute(route.path, pathname);
-      if (params) {
+      const params = matchRouteAndParamsFun(route.path, pathname);
+      if (params !== null) {
+        console.log("Route matched, calling controller");
         req.params = params;
         return route.handler(req, res);
       }
     }
+  }
+
+  if (!routeMatched) {
+    res.writeHead(404, { "Content-Type": "application/json" });
+    res.end(
+      JSON.stringify({
+        success: false,
+        message: "Route not found",
+      })
+    );
   }
 
   //   app create done
