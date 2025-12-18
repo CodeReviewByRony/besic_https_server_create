@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
-    password: { type: String, trim: true },
+    password: { type: String, trim: true, required: true },
     gender: { type: String, enum: ["male", "female", "option"] },
     date_of_birth: { type: Date },
     sendOTP: { type: String },
