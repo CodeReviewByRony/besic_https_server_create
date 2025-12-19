@@ -77,8 +77,6 @@ export const app = https.createServer(sslOptions, (req, res) => {
 
   const allRoutes = [...userRoute];
 
-  let routeMatched = false;
-
   for (const route of allRoutes) {
     if (method === route.method) {
       const params = matchRouteAndParamsFun(route.path, pathname);
@@ -86,17 +84,15 @@ export const app = https.createServer(sslOptions, (req, res) => {
       if (params !== null) {
         console.log("Route matched");
 
-        routeMatched = true;
         req.params = params;
 
-        // ✅ middleware check
-        if (route.middleware) {
-          return route.middleware(req, res, () => {
+        // ✅ ONLY middleware check
+        if (route.middlwere) {
+          return route.middlwere(req, res, () => {
             route.handler(req, res);
           });
         }
 
-        // ❌ middleware না থাকলে সরাসরি controller
         return route.handler(req, res);
       }
     }
