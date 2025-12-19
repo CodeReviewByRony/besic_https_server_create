@@ -4,6 +4,7 @@ import {
   generateAccessToken,
   generatePasswordHash,
   generateUsername,
+  passwordDecoded,
 } from "../utils/helper/helper.js";
 import { emailCheker, passwordCheker } from "../utils/validator/validator.js";
 
@@ -88,6 +89,72 @@ export const newUserCreate = (req, res) => {
       );
     } catch (error) {
       console.log("create user controller error : ", error);
+      return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+    }
+  });
+};
+
+export const login = (req, res) => {
+  let body = "";
+
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", async () => {
+    try {
+      const { email, password } = JSON.parse(body);
+
+      // field are not eampty parse
+      if (!email || !password) {
+        return sendApiResponce(
+          res,
+          new ApiError(400, "these field are required !")
+        );
+      }
+
+      //   is email valid cheker
+      const isEmailValid = emailCheker(email);
+      if (!isEmailValid) {
+        return sendApiResponce(res, new ApiError(400, "enter valid email"));
+      }
+
+      // is email exist
+      const isEmailExist = await User.findOne({ email });
+
+      // 1️⃣ user না থাকলে এখানেই return
+      if (!isEmailExist) {
+        return sendApiResponce(res, new ApiError(404, "email not found"));
+      }
+
+      // 2️⃣ এখন safe → password compare
+      const isPasswordMatch = await passwordDecoded(
+        password,
+        isEmailExist.password
+      );
+
+      if (!isPasswordMatch) {
+        return sendApiResponce(res, new ApiError(400, "password not match"));
+      }
+
+      //   user payload send to access generate token function
+      const payloadData = isEmailExist._id;
+      const token = await generateAccessToken({ payloadData });
+
+      // Header-এ attach করা
+      res.setHeader("Authorization", `Bearer ${token}`);
+
+      //   update access token
+      isEmailExist.accessToken = token;
+      await isEmailExist.save();
+
+      //   api data return
+      return sendApiResponce(
+        res,
+        new ApiSuccess(201, "new user create done", { isEmailExist })
+      );
+    } catch (error) {
+      console.log(" user login controller error : ", error);
       return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
     }
   });
