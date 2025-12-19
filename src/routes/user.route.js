@@ -17,7 +17,7 @@ export const userRoute = [
     handler: login,
   },
   {
-    method: "POST",
+    method: "GET",
     path: "/user/log-out",
     handler: logout,
     middlwere: authMiddlwere,
