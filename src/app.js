@@ -60,6 +60,21 @@ export const app = https.createServer(sslOptions, (req, res) => {
 
   //   define route..............
 
+  // const allRoutes = [...userRoute];
+
+  // let routeMatched = false;
+
+  // for (const route of allRoutes) {
+  //   if (method === route.method) {
+  //     const params = matchRouteAndParamsFun(route.path, pathname);
+  //     if (params !== null) {
+  //       console.log("Route matched, calling controller");
+  //       req.params = params;
+  //       return route.handler(req, res);
+  //     }
+  //   }
+  // }
+
   const allRoutes = [...userRoute];
 
   let routeMatched = false;
@@ -67,9 +82,21 @@ export const app = https.createServer(sslOptions, (req, res) => {
   for (const route of allRoutes) {
     if (method === route.method) {
       const params = matchRouteAndParamsFun(route.path, pathname);
+
       if (params !== null) {
-        console.log("Route matched, calling controller");
+        console.log("Route matched");
+
+        routeMatched = true;
         req.params = params;
+
+        // ✅ middleware check
+        if (route.middleware) {
+          return route.middleware(req, res, () => {
+            route.handler(req, res);
+          });
+        }
+
+        // ❌ middleware না থাকলে সরাসরি controller
         return route.handler(req, res);
       }
     }
