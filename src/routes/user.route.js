@@ -1,4 +1,8 @@
-import { login, newUserCreate } from "../controllers/user.controller.js";
+import {
+  login,
+  logout,
+  newUserCreate,
+} from "../controllers/user.controller.js";
 import { authMiddlwere } from "../middlwere/auth.middlwere.js";
 
 export const userRoute = [
