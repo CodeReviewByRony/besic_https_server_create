@@ -38,6 +38,7 @@ export const todoPost = (req, res) => {
       const todoData = {
         todoTitle,
         todoPara,
+        todoOwner: id,
       };
 
       await Todo.create(todoData);
