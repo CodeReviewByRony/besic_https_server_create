@@ -14,7 +14,7 @@ export const authMiddlwere = (req, res, next) => {
       );
     }
 
-    // console.log("hearde4r :", authHeaders);
+    //  console.log("hearde4r :", authHeaders);
 
     // "Bearer tokenvalue" থেকে token আলাদা করা
     const token = authHeaders.split("=")[1];
