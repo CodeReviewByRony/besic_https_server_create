@@ -3,6 +3,7 @@ import {
   logout,
   newUserCreate,
 } from "../controllers/user.controller.js";
+import { adminMiddlwere } from "../middlwere/admin.middlwere.js";
 import { authMiddlwere } from "../middlwere/auth.middlwere.js";
 
 export const userRoute = [
@@ -21,5 +22,11 @@ export const userRoute = [
     path: "/user/log-out",
     handler: logout,
     middlwere: authMiddlwere,
+  },
+  {
+    method: "GET",
+    path: "/user/all-user-list",
+    handler: logout,
+    middlwere: [authMiddlwere, adminMiddlwere],
   },
 ];
