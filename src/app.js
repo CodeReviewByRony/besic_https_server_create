@@ -99,54 +99,95 @@ export const app = https.createServer(sslOptions, (req, res) => {
   //   }
   // }
 
+  // for (const route of allRoutes) {
+  //   if (method === route.method) {
+  //     const params = matchRouteAndParamsFun(route.path, pathname);
+
+  //     if (params !== null) {
+  //       req.params = params;
+  //       console.log("Route matched");
+
+  //       // UPDATED: মিডলওয়্যার চেক লজিক (একাধিক মিডলওয়্যার হ্যান্ডেল করার জন্য)
+  //       if (route.middlwere) {
+  //         // UPDATED: যদি একটি ফাংশন থাকে তাকে অ্যারে বানিয়ে নেওয়া, আর অ্যারে থাকলে সেটাই রাখা
+  //         const middlewares = Array.isArray(route.middlwere)
+  //           ? route.middlwere
+  //           : [route.middlwere];
+
+  //         let index = 0;
+
+  //         // UPDATED: recursive next function যা সিরিয়ালি মিডলওয়্যার চালাবে
+  //         const next = () => {
+  //           if (index < middlewares.length) {
+  //             const currentMiddleware = middlewares[index++];
+
+  //             // মিডলওয়্যার কল করা হচ্ছে, পরবর্তী স্টেপ হিসেবে 'next' পাস করা হচ্ছে
+  //             return currentMiddleware(req, res, next);
+  //           } else {
+  //             // সব মিডলওয়্যার শেষ হলে মেইন হ্যান্ডলার কল হবে
+  //             return route.handler(req, res);
+  //           }
+  //         };
+
+  //         // প্রথম মিডলওয়্যার কল করে চেইন শুরু করা
+  //         return next();
+  //       }
+
+  //       // যদি কোন মিডলওয়্যার না থাকে তবে সরাসরি হ্যান্ডলার কল হবে
+  //       return route.handler(req, res);
+  //     }
+  //   }
+  // }
+
+  // লুপ শুরু হওয়ার আগে ভেরিয়েবলটি ডিক্লেয়ার করুন
+  let routeMatched = false;
+
   for (const route of allRoutes) {
     if (method === route.method) {
       const params = matchRouteAndParamsFun(route.path, pathname);
 
       if (params !== null) {
+        routeMatched = true; // ✅ রুট ম্যাচ হয়েছে এটা সেট করুন
         req.params = params;
 
-        // UPDATED: মিডলওয়্যার চেক লজিক (একাধিক মিডলওয়্যার হ্যান্ডেল করার জন্য)
         if (route.middlwere) {
-          // UPDATED: যদি একটি ফাংশন থাকে তাকে অ্যারে বানিয়ে নেওয়া, আর অ্যারে থাকলে সেটাই রাখা
           const middlewares = Array.isArray(route.middlwere)
             ? route.middlwere
             : [route.middlwere];
-
           let index = 0;
 
-          // UPDATED: recursive next function যা সিরিয়ালি মিডলওয়্যার চালাবে
           const next = () => {
             if (index < middlewares.length) {
               const currentMiddleware = middlewares[index++];
-
-              // মিডলওয়্যার কল করা হচ্ছে, পরবর্তী স্টেপ হিসেবে 'next' পাস করা হচ্ছে
               return currentMiddleware(req, res, next);
             } else {
-              // সব মিডলওয়্যার শেষ হলে মেইন হ্যান্ডলার কল হবে
-              return route.handler(req, res);
+              return route.handler(req, res); // ✅ সব মিডলওয়্যার শেষে কন্ট্রোলার হিট হবে
             }
           };
-
-          // প্রথম মিডলওয়্যার কল করে চেইন শুরু করা
           return next();
         }
-
-        // যদি কোন মিডলওয়্যার না থাকে তবে সরাসরি হ্যান্ডলার কল হবে
         return route.handler(req, res);
       }
     }
   }
 
+  // ৪. যদি লুপ শেষে কোন রুট না মেলে
   if (!routeMatched) {
     res.writeHead(404, { "Content-Type": "application/json" });
-    res.end(
-      JSON.stringify({
-        success: false,
-        message: "Route not found",
-      })
+    return res.end(
+      JSON.stringify({ success: false, message: "Route not found" })
     );
   }
+
+  // if (!routeMatched) {
+  //   res.writeHead(404, { "Content-Type": "application/json" });
+  //   res.end(
+  //     JSON.stringify({
+  //       success: false,
+  //       message: "Route not found",
+  //     })
+  //   );
+  // }
 
   //   app create done
 });
