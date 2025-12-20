@@ -5,6 +5,7 @@ import constants from "constants";
 import { SSL_CERT_PATH, SSL_KEY_PATH } from "./constent.js";
 import { userRoute } from "./routes/user.route.js";
 import { matchRouteAndParamsFun } from "./utils/utility/utility.js";
+import { todoRoute } from "./routes/todo.route.js";
 
 if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
   console.log("ssl path missing");
@@ -75,7 +76,7 @@ export const app = https.createServer(sslOptions, (req, res) => {
   //   }
   // }
 
-  const allRoutes = [...userRoute];
+  const allRoutes = [...userRoute, ...todoRoute];
 
   // for (const route of allRoutes) {
   //   if (method === route.method) {
