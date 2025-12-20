@@ -79,6 +79,9 @@ export const newUserCreate = (req, res) => {
       // Header-এ attach করা
       res.setHeader("Authorization", `Bearer ${token}`);
 
+      //  'user access token = Cookie' নামে একটি কুকি
+      res.setHeader("Set-Cookie", `auth-token=${token}`);
+
       //   update access token
       user.accessToken = token;
       await user.save();
@@ -95,6 +98,8 @@ export const newUserCreate = (req, res) => {
 };
 
 export const login = (req, res) => {
+  // console.log("req header :", req.headers.cookie);
+
   let body = "";
 
   req.on("data", (chunk) => {
@@ -144,6 +149,9 @@ export const login = (req, res) => {
       // Header-এ attach করা
       res.setHeader("Authorization", `Bearer ${token}`);
 
+      //  'user access token = Cookie' নামে একটি কুকি
+      res.setHeader("Set-Cookie", `auth-token=${token}`);
+
       //   update access token
       isEmailExist.accessToken = token;
       await isEmailExist.save();
@@ -158,4 +166,32 @@ export const login = (req, res) => {
       return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
     }
   });
+};
+
+export const logout = async (req, res) => {
+  try {
+    // console.log("user : ", req.user);
+
+    // 🔐 authMiddleware থেকে set হওয়া user
+    if (!req.user || !req.user._id) {
+      res.writeHead(401, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({ success: false, message: "Unauthorized" })
+      );
+    }
+
+    const id = req.user._id;
+
+    await User.findByIdAndUpdate(
+      id,
+      { $set: { accessToken: null } },
+      { new: true }
+    );
+
+    //   api data return
+    return sendApiResponce(res, new ApiSuccess(200, "logout done"));
+  } catch (error) {
+    console.log(" user logout controller error : ", error);
+    return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+  }
 };
