@@ -82,7 +82,7 @@ export const app = https.createServer(sslOptions, (req, res) => {
       const params = matchRouteAndParamsFun(route.path, pathname);
 
       if (params !== null) {
-        console.log("Route matched");
+        // console.log("Route matched");
 
         req.params = params;
 
