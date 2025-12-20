@@ -1,4 +1,5 @@
 import {
+  getAllUser,
   login,
   logout,
   newUserCreate,
@@ -26,7 +27,7 @@ export const userRoute = [
   {
     method: "GET",
     path: "/user/all-user-list",
-    handler: logout,
+    handler: getAllUser,
     middlwere: [authMiddlwere, adminMiddlwere],
   },
 ];
