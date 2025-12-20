@@ -77,22 +77,61 @@ export const app = https.createServer(sslOptions, (req, res) => {
 
   const allRoutes = [...userRoute];
 
+  // for (const route of allRoutes) {
+  //   if (method === route.method) {
+  //     const params = matchRouteAndParamsFun(route.path, pathname);
+
+  //     if (params !== null) {
+  //       // console.log("Route matched");
+
+  //       req.params = params;
+
+  //       // ✅ ONLY middleware check
+  //       if (route.middlwere) {
+  //         return route.middlwere(req, res, () => {
+  //           route.handler(req, res);
+  //         });
+  //       }
+
+  //       return route.handler(req, res);
+  //     }
+  //   }
+  // }
+
   for (const route of allRoutes) {
     if (method === route.method) {
       const params = matchRouteAndParamsFun(route.path, pathname);
 
       if (params !== null) {
-        // console.log("Route matched");
-
         req.params = params;
 
-        // ✅ ONLY middleware check
+        // UPDATED: মিডলওয়্যার চেক লজিক (একাধিক মিডলওয়্যার হ্যান্ডেল করার জন্য)
         if (route.middlwere) {
-          return route.middlwere(req, res, () => {
-            route.handler(req, res);
-          });
+          // UPDATED: যদি একটি ফাংশন থাকে তাকে অ্যারে বানিয়ে নেওয়া, আর অ্যারে থাকলে সেটাই রাখা
+          const middlewares = Array.isArray(route.middlwere)
+            ? route.middlwere
+            : [route.middlwere];
+
+          let index = 0;
+
+          // UPDATED: recursive next function যা সিরিয়ালি মিডলওয়্যার চালাবে
+          const next = () => {
+            if (index < middlewares.length) {
+              const currentMiddleware = middlewares[index++];
+
+              // মিডলওয়্যার কল করা হচ্ছে, পরবর্তী স্টেপ হিসেবে 'next' পাস করা হচ্ছে
+              return currentMiddleware(req, res, next);
+            } else {
+              // সব মিডলওয়্যার শেষ হলে মেইন হ্যান্ডলার কল হবে
+              return route.handler(req, res);
+            }
+          };
+
+          // প্রথম মিডলওয়্যার কল করে চেইন শুরু করা
+          return next();
         }
 
+        // যদি কোন মিডলওয়্যার না থাকে তবে সরাসরি হ্যান্ডলার কল হবে
         return route.handler(req, res);
       }
     }
