@@ -195,3 +195,19 @@ export const logout = async (req, res) => {
     return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
   }
 };
+
+export const getAllUser = async (req, res) => {
+  try {
+    const allUser = await User.find()
+      .sort({ createdAt: -1 })
+      .select("-password");
+
+    return sendApiResponce(
+      res,
+      new ApiSuccess(200, "all user access Admin", allUser)
+    );
+  } catch (error) {
+    console.log(" get all user controller error : ", error);
+    return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+  }
+};
