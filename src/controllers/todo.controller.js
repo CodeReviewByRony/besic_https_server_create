@@ -56,7 +56,9 @@ export const todoPost = (req, res) => {
 
 export const getAllTodo = async (req, res) => {
   try {
-    let allTodo = await Todo.find().sort({ createdAt: -1 });
+    let allTodo = await Todo.find()
+      .sort({ createdAt: -1 })
+      .populate("todoOwner", "name email");
 
     return sendApiResponce(
       res,
