@@ -62,5 +62,4 @@ export const generateAccessToken = async (payload) => {
     expiresIn: 1000 * 60 * 60 * 24 * 30,
   });
   return result;
-  ad;
 };
