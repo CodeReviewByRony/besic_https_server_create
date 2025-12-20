@@ -56,6 +56,7 @@ export const authMiddlwere = (req, res, next) => {
       next(); // পরের handler call
     });
   } catch (error) {
+    console.log("auth middlwere error : ", error);
     return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
   }
 };
