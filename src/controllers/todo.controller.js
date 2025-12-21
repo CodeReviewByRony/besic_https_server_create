@@ -210,3 +210,38 @@ export const todoUpdateUserWonTodo = (req, res) => {
     }
   });
 };
+
+export const todoDeleteUserOwnTodo = async (req, res) => {
+  try {
+    const { userID, todoID } = req.params;
+
+    console.log(userID, todoID);
+
+    const id = req.user._id;
+    if (userID !== id.toString()) {
+      return sendApiResponce(
+        res,
+        new ApiError(401, "request params id not match")
+      );
+    }
+
+    const result = await Todo.deleteOne({ _id: todoID, todoOwner: userID });
+    console.log(result);
+
+    // শুধু !result চেক করলে হবে না, deletedCount চেক করতে হবে
+    if (result.deletedCount === 0) {
+      return sendApiResponce(
+        res,
+        new ApiError(
+          404,
+          "Todo not found or you don't have permission to delete it"
+        )
+      );
+    }
+
+    return sendApiResponce(res, new ApiSuccess(204, "own user delete todo"));
+  } catch (error) {
+    console.log("user won todo todo controller error : ", error);
+    return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+  }
+};
