@@ -1,4 +1,8 @@
-import { getAllTodo, todoPost } from "../controllers/todo.controller.js";
+import {
+  getAllTodo,
+  todoPost,
+  userWonTodoList,
+} from "../controllers/todo.controller.js";
 import { authMiddlwere } from "../middlwere/auth.middlwere.js";
 
 export const todoRoute = [
@@ -12,5 +16,11 @@ export const todoRoute = [
     method: "GET",
     path: "/",
     handler: getAllTodo,
+  },
+  {
+    method: "GET",
+    path: "/:id/dashboard",
+    handler: userWonTodoList,
+    middlwere: authMiddlwere,
   },
 ];
