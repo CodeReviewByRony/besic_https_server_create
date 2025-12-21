@@ -1,5 +1,6 @@
 import {
   getAllTodo,
+  todoDeleteUserOwnTodo,
   todoPost,
   todoUpdateUserWonTodo,
   userWonTodoList,
@@ -28,6 +29,12 @@ export const todoRoute = [
     method: "PUT",
     path: "/:userID/dashboard/:todoID/todo",
     handler: todoUpdateUserWonTodo,
+    middlwere: authMiddlwere,
+  },
+  {
+    method: "DELETE",
+    path: "/:userID/dashboard/:todoID/todo-delete",
+    handler: todoDeleteUserOwnTodo,
     middlwere: authMiddlwere,
   },
 ];
