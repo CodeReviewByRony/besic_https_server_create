@@ -7,7 +7,7 @@ export const todoPost = (req, res) => {
   //   console.log(req.params.split(":")[1].join());
   const params = req.params;
   const paramsStr = Object.values(params).join();
-  console.log(paramsStr);
+  // console.log(paramsStr);
 
   let body = "";
 
@@ -20,7 +20,7 @@ export const todoPost = (req, res) => {
       const { todoTitle, todoPara } = JSON.parse(body);
 
       const id = req.user._id;
-      console.log(id.toString());
+      // console.log(id.toString());
 
       if (paramsStr !== id.toString()) {
         return sendApiResponce(
@@ -79,6 +79,52 @@ export const getAllTodo = async (req, res) => {
     );
   } catch (error) {
     console.log("get all todo controller error : ", error);
+    return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+  }
+};
+
+export const userWonTodoList = async (req, res) => {
+  const params = req.params;
+  const paramsStr = Object.values(params).join();
+  // console.log(paramsStr);
+
+  try {
+    const id = req.user._id;
+    // console.log(id.toString());
+
+    if (paramsStr !== id.toString()) {
+      return sendApiResponce(
+        res,
+        new ApiError(400, "requset params and user id not match")
+      );
+    } else {
+      const findUser = await User.findById(id);
+
+      if (!findUser) {
+        return sendApiResponce(
+          res,
+          new ApiError(401, "unauthorized in user dashboard")
+        );
+      }
+
+      const findOwnTodo = await Todo.find({ todoOwner: id }).sort({
+        createdAt: -1,
+      });
+
+      if (!findOwnTodo || findOwnTodo.length === 0) {
+        return sendApiResponce(
+          res,
+          new ApiError(400, "user own todo list eamty")
+        );
+      }
+
+      return sendApiResponce(
+        res,
+        new ApiSuccess(200, "user won todo list get done", findOwnTodo)
+      );
+    }
+  } catch (error) {
+    console.log("user won todo list controller error : ", error);
     return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
   }
 };
