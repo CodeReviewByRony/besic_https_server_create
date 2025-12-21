@@ -1,6 +1,7 @@
 import {
   getAllTodo,
   todoPost,
+  todoUpdateUserWonTodo,
   userWonTodoList,
 } from "../controllers/todo.controller.js";
 import { authMiddlwere } from "../middlwere/auth.middlwere.js";
@@ -8,7 +9,7 @@ import { authMiddlwere } from "../middlwere/auth.middlwere.js";
 export const todoRoute = [
   {
     method: "POST",
-    path: "/:id/todo-post",
+    path: "/:userID/todo-post",
     handler: todoPost,
     middlwere: authMiddlwere,
   },
@@ -19,8 +20,14 @@ export const todoRoute = [
   },
   {
     method: "GET",
-    path: "/:id/dashboard",
+    path: "/:userID/dashboard",
     handler: userWonTodoList,
+    middlwere: authMiddlwere,
+  },
+  {
+    method: "PUT",
+    path: "/:userID/dashboard/:todoID/todo",
+    handler: todoUpdateUserWonTodo,
     middlwere: authMiddlwere,
   },
 ];
