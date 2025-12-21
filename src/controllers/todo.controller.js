@@ -107,9 +107,11 @@ export const userWonTodoList = async (req, res) => {
         );
       }
 
-      const findOwnTodo = await Todo.find({ todoOwner: id }).sort({
-        createdAt: -1,
-      });
+      const findOwnTodo = await Todo.find({ todoOwner: id })
+        .sort({
+          createdAt: -1,
+        })
+        .populate("todoOwner", "name email role createdAt");
 
       if (!findOwnTodo || findOwnTodo.length === 0) {
         return sendApiResponce(
@@ -127,4 +129,84 @@ export const userWonTodoList = async (req, res) => {
     console.log("user won todo list controller error : ", error);
     return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
   }
+};
+
+export const todoUpdateUserWonTodo = (req, res) => {
+  // const params = req.params;
+  // const paramsArr = Object.entries(params);
+  // const userID = paramsArr[0][1];
+  // const todoID = paramsArr[1][1];
+
+  const { userID, todoID } = req.params;
+
+  console.log(todoID, userID);
+
+  let body = "";
+
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", async () => {
+    try {
+      const { todoTitle, todoPara } = JSON.parse(body);
+
+      const id = req.user._id;
+
+      if (userID !== id.toString()) {
+        return sendApiResponce(
+          res,
+          new ApiError(401, "unAuthorised in todo update controller")
+        );
+      }
+
+      const findUser = await User.findById(id);
+
+      if (!findUser) {
+        return sendApiResponce(
+          res,
+          new ApiError(401, "unauthorised in todo update controller")
+        );
+      }
+
+      const findTodo = await Todo.findOne({ _id: todoID });
+
+      if (!findTodo) {
+        return sendApiResponce(res, new ApiError(404, "not found a todo"));
+      }
+
+      if (findTodo.todoOwner.toString() !== id.toString()) {
+        return sendApiResponce(
+          res,
+          new ApiError(403, "Forbidden: not your todo")
+        );
+      }
+
+      if (!todoTitle || !todoPara) {
+        return sendApiResponce(
+          res,
+          new ApiError(400, "these field are required")
+        );
+      }
+
+      // const updateTodo = {
+      //   todoTitle,
+      //   todoPara,
+      // };
+
+      const updateTodo = await Todo.findByIdAndUpdate(
+        { _id: todoID, todoOwner: id },
+        { $set: { todoTitle, todoPara } },
+        { new: true }
+      );
+
+      return sendApiResponce(
+        res,
+        new ApiSuccess(200, "update todo done", updateTodo)
+      );
+    } catch (error) {
+      console.log("user won todo update controller error : ", error);
+      return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+    }
+  });
 };
