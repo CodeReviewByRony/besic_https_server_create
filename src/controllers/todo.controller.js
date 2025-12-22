@@ -53,11 +53,11 @@ export const todoPost = (req, res) => {
           todoOwner: id,
         };
 
-        await Todo.create(todoData);
+        const todoResult = await Todo.create(todoData);
 
         return sendApiResponce(
           res,
-          new ApiSuccess(201, "todo create done", todoData)
+          new ApiSuccess(201, "todo create done", todoResult)
         );
       }
     } catch (error) {
