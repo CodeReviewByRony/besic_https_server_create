@@ -211,3 +211,68 @@ export const getAllUser = async (req, res) => {
     return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
   }
 };
+
+export const userUpdateField = (req, res) => {
+  const { userID } = req.params;
+  let body = "";
+
+  req.on("data", (chunk) => {
+    body += chunk.toString();
+  });
+
+  req.on("end", async () => {
+    try {
+      const id = req.user._id;
+
+      if (userID !== id.toString()) {
+        return sendApiResponce(
+          res,
+          new ApiError(401, "requset params and request body user not match")
+        );
+      }
+
+      const { name, username, gender, date_of_birth, action } =
+        JSON.parse(body);
+
+      if (!name || !username || !gender || !date_of_birth) {
+        return sendApiResponce(
+          res,
+          new ApiError(400, "these field are not empty")
+        );
+      }
+
+      const isUsernameExist = await User.findOne({ username });
+      if (isUsernameExist) {
+        return sendApiResponce(
+          res,
+          new ApiError(401, "this username alredy exist!, try different")
+        );
+      }
+
+      if (action === "userUpdate") {
+        const findUser = await User.findByIdAndUpdate(
+          id,
+          {
+            $set: { name, username, gender, date_of_birth },
+          },
+          { new: true }
+        );
+
+        if (!findUser) {
+          return sendApiResponce(
+            res,
+            new ApiError(404, "user not found in userUpdateField controller")
+          );
+        } else {
+          return sendApiResponce(
+            res,
+            new ApiSuccess(200, "update user data done", findUser)
+          );
+        }
+      }
+    } catch (error) {
+      console.log("user update field controller error : ", error);
+      return sendApiResponce(res, new ApiError(500, "Internal Server Error"));
+    }
+  });
+};
