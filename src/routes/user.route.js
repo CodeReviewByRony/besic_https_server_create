@@ -33,7 +33,7 @@ export const userRoute = [
   },
   {
     method: "GET",
-    path: "/user/all-user-list",
+    path: "/:role/all-user-list",
     handler: getAllUser,
     middlwere: [authMiddlwere, adminMiddlwere],
   },
