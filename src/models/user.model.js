@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema(
     password: { type: String, trim: true, required: true },
     role: { type: String, enum: ["user", "admin"], default: "user" },
     gender: { type: String, enum: ["male", "female", "option"] },
-    date_of_birth: { type: Date },
+    date_of_birth: { type: String },
     sendOTP: { type: String },
     emailVerified: { type: Boolean, default: false },
     accessToken: { type: String },
