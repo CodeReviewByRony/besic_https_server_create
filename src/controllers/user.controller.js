@@ -198,6 +198,18 @@ export const logout = async (req, res) => {
 
 export const getAllUser = async (req, res) => {
   try {
+    const { role } = req.params;
+    const id = req.user._id;
+    const findUser = await User.findById(id);
+    const userRole = findUser.role;
+
+    if (role !== userRole) {
+      return sendApiResponce(
+        res,
+        new ApiError(401, "get all user access only admin and not match params")
+      );
+    }
+
     const allUser = await User.find()
       .sort({ createdAt: -1 })
       .select("-password");
