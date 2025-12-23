@@ -1,4 +1,4 @@
-import http from "https";
+import http from "http";
 import fs from "fs";
 import path from "path";
 import constants from "constants";
