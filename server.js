@@ -6,6 +6,6 @@ import { PORT } from "./src/constent.js";
 dbConnect();
 
 // server connect function call
-app.listen(PORT, () => {
-  console.log(`server start on https://localhost:${PORT}`);
+app.listen(PORT || 3001, () => {
+  console.log(`server start on https://localhost:${PORT || 3001}`);
 });
