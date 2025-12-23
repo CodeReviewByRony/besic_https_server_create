@@ -1,4 +1,4 @@
-import https from "https";
+import http from "https";
 import fs from "fs";
 import path from "path";
 import constants from "constants";
@@ -7,22 +7,22 @@ import { userRoute } from "./routes/user.route.js";
 import { matchRouteAndParamsFun } from "./utils/utility/utility.js";
 import { todoRoute } from "./routes/todo.route.js";
 
-if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
-  console.log("ssl path missing");
-}
+// if (!SSL_CERT_PATH || !SSL_KEY_PATH) {
+//   console.log("ssl path missing");
+// }
 
-const sslOptions = {
-  key: fs.readFileSync(path.resolve(SSL_KEY_PATH)),
-  cert: fs.readFileSync(path.resolve(SSL_CERT_PATH)),
-  minVersion: "TLSv1.2",
-  maxVersion: "TLSv1.3",
-  secureOptions:
-    constants.SSL_OP_NO_SSLv3 |
-    constants.SSL_OP_NO_TLSv1 |
-    constants.SSL_OP_NO_TLSv1_1,
-};
+// const sslOptions = {
+//   key: fs.readFileSync(path.resolve(SSL_KEY_PATH)),
+//   cert: fs.readFileSync(path.resolve(SSL_CERT_PATH)),
+//   minVersion: "TLSv1.2",
+//   maxVersion: "TLSv1.3",
+//   secureOptions:
+//     constants.SSL_OP_NO_SSLv3 |
+//     constants.SSL_OP_NO_TLSv1 |
+//     constants.SSL_OP_NO_TLSv1_1,
+// };
 
-export const app = https.createServer(sslOptions, (req, res) => {
+export const app = http.createServer((req, res) => {
   // security headers and cors
   const securityHeaders = {
     // ===== Security Headers =====
